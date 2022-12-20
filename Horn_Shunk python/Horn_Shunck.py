@@ -34,7 +34,7 @@ def S_block(N, b, H):
     x_0 = x_1.copy()
     k = 1
     while norm(n1,inf) > eps:
-        print(norm(n1,inf) - eps, "\t norm = ", norm(n1,inf), "\t k = ", k)
+        print("norm = ", norm(n1,inf), "\t k = ", k)
         for i in range(0, N**2):
             if i % N == 0:
                 x_1[i*2:i*2+2] = revers_m(H[i*2:i*2+2, i*2:i*2+2]).dot(-H[i*2:i*2+2, (i+1)*2:(i+1)*2+2].dot(x_1[(i+1)*2:(i+1)*2+2]) + b[i*2:i*2+2])
