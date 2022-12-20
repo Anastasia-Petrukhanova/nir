@@ -100,7 +100,8 @@ def xyz_differences(N):
                         mY[i-frame_width][j-frame_width] = (1/4)*(A1[i+1][j-1]-A1[i][j-1]+A1[i+1][j]-A1[i][j]+A2[i+1][j-1]-A2[i][j-1]+A2[i+1][j]-A2[i][j])
                         mT[i-frame_width][j-frame_width] = (1/4)*(A2[i][j-1]-A1[i][j-1]+A2[i+1][j-1]-A1[i+1][j-1]+A2[i][j]-A1[i][j]+A2[i+1][j]-A1[i+1][j])
 
-size = [20,20]##########################
+size = [100,100] # изменяемые данные
+step = 10 # шаг, с которым будут отображены векторы
 N = size[0]
 frame_width = 1
 shift = 1
@@ -110,11 +111,14 @@ A1 = []
 A2 = []
 
 A1 = random_img(size, frame_width)
-A2 = right_diag_shift(A1, [size[0]+2, size[1]+2], shift)
+A2 = right_diag_shift(A1, [size[0]+2*frame_width, size[1]+2*frame_width], shift)
 plt.imshow(A1, cmap="Greys")
 plt.show()
 plt.imshow(A2, cmap="Greys")
 plt.show()
+
+A3 = a = [[255] * (size[0]+2*frame_width)] * (size[1]+2*frame_width)
+A3 = Image.fromarray(np.array(A3))
 
 accur0 = []
 accur1 = []
@@ -215,27 +219,26 @@ for count in [0,1,2]:
         for i in range(frame_width, size[1]+frame_width):
             tan[i][j] = abs(-1-v[i][j]/u[i][j])
 
-    step = 1###########################
-    fig, ax = plt.subplots()
-    ax.set_xticks(range(0, size[0] + 2*frame_width, step))
-    ax.set_yticks(range(0, size[0] + 2*frame_width, step))
+    ax = plt.figure().gca()
+    ax.imshow(A3, cmap = 'gray')
 
     for i in range(0, size[0] + 2*frame_width, step):
         for j in range(0, size[1] + 2*frame_width, step):
-            ax.arrow(i, size[1]+2*frame_width-j-1, step*u[j][i], -step*v[j][i], length_includes_head = True, head_width = 0.15*step, overhang = 1, head_length = 0.2*step, width = 0.01)
+            ax.arrow(i, j, step*u[j][i], step*v[j][i], length_includes_head = True, head_width = 0.15*step, overhang = 1, head_length = 0.2*step, width = 0.01)
+    plt.draw()
     plt.show()
 
-    fig, ax = plt.subplots()
-    ax.set_xticks(range(0, size[0] + 2*frame_width, step))
-    ax.set_yticks(range(0, size[0] + 2*frame_width, step))
+    ax = plt.figure().gca()
+    ax.imshow(A3, cmap = 'gray')
 
     for i in range(0, size[0] + 2*frame_width, step):
         for j in range(0, size[1] + 2*frame_width, step):
             c = math.sqrt(u[j][i]**2+v[j][i]**2)
             if c != 0:
-                ax.arrow(i, size[1]+2*frame_width-j-1, step*u[j][i]/c, -step*v[j][i]/c, length_includes_head = True, head_width = 0.15*step, overhang = 1, head_length = 0.2*step, width = 0.01)
+                ax.arrow(i, j, step*u[j][i]/c, step*v[j][i]/c, length_includes_head = True, head_width = 0.15*step, overhang = 1, head_length = 0.2*step, width = 0.01)
             else:
-                ax.arrow(i, size[1]+2*frame_width-j-1, step*u[j][i], -step*v[j][i], length_includes_head = True, head_width = 0.15*step, overhang = 1, head_length = 0.2*step, width = 0.01)
+                ax.arrow(i, j, step*u[j][i], step*v[j][i], length_includes_head = True, head_width = 0.15*step, overhang = 1, head_length = 0.2*step, width = 0.01)
+    plt.draw()
     plt.show()
 
     frame_w = []
@@ -250,7 +253,7 @@ for count in [0,1,2]:
             accur1.append(sum/((size[0]-t)*(size[1]-t)))
         else:
             accur2.append(sum/((size[0]-t)*(size[1]-t)))
-        frame_w.append(size[0]-t)
+        frame_w.append(t)
 
 
 fig, ax = plt.subplots()
@@ -258,7 +261,7 @@ fig, ax = plt.subplots()
 plt.plot(frame_w, accur0, color='r', label='граничные условия 0')
 plt.plot(frame_w, accur1, color='b', label='граничные условия 1')
 plt.plot(frame_w, accur2, color='g', label='граничные условия 1, 0')
-plt.xlabel('Размер изображения')
+plt.xlabel('Расстояние до границы')
 plt.legend()
 
 plt.show()
